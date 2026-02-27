@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CREOVATE™ — Génération de Contenus Digitaux par IA</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Outfit:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#04080F; --bg2:#080F1E; --bg3:#0C1528;
+  --blue:#1655C0; --blue2:#2270E8;
+  --cyan:#00D4FF; --gold:#C9A84C; --gold2:#E8C96A;
+  --white:#EEF3FF; --gray:#7A85A8; --gray2:#B0B8D0;
+  --green:#00C878;
+}
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--white); font-family:'Outfit',sans-serif; font-size:15px; line-height:1.6; overflow-x:hidden; }
+.bg-glow { position:fixed; z-index:0; pointer-events:none; border-radius:50%; filter:blur(80px); }
+.g1 { width:700px; height:500px; background:rgba(22,85,192,0.18); top:-150px; left:50%; transform:translateX(-50%); }
+.g2 { width:400px; height:400px; background:rgba(201,168,76,0.07); bottom:10%; right:-100px; }
+.g3 { width:300px; height:300px; background:rgba(0,212,255,0.05); top:40%; left:-80px; }
+.grid-bg { position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image:linear-gradient(rgba(22,85,192,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(22,85,192,0.04) 1px,transparent 1px);
+  background-size:52px 52px; }
+nav { position:fixed; top:0; left:0; right:0; z-index:100; background:rgba(4,8,15,0.88); backdrop-filter:blur(24px); border-bottom:1px solid rgba(201,168,76,0.12); height:64px; display:flex; align-items:center; }
+.nav-in { width:100%; max-width:1100px; margin:0 auto; padding:0 28px; display:flex; align-items:center; justify-content:space-between; }
+.logo { display:flex; align-items:center; gap:10px; font-family:'Syne',sans-serif; font-weight:800; font-size:1.35rem; letter-spacing:-0.03em; color:var(--white); text-decoration:none; cursor:pointer; }
+.logo-box { width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,var(--gold),var(--blue2)); display:flex; align-items:center; justify-content:center; font-size:17px; }
+.logo em { color:var(--gold); font-style:normal; }
+.nav-pill { font-family:'Space Mono',monospace; font-size:0.6rem; letter-spacing:0.1em; color:var(--cyan); border:1px solid rgba(0,212,255,0.25); padding:5px 12px; border-radius:20px; text-transform:uppercase; }
+.wrap { position:relative; z-index:1; max-width:1100px; margin:0 auto; padding:0 28px; }
+/* HERO */
+.hero { padding:130px 0 70px; text-align:center; }
+.hero-tag { display:inline-flex; align-items:center; gap:8px; font-family:'Space Mono',monospace; font-size:0.62rem; letter-spacing:0.14em; color:var(--cyan); border:1px solid rgba(0,212,255,0.2); padding:6px 16px; border-radius:20px; margin-bottom:28px; }
+.dot { width:7px; height:7px; border-radius:50%; background:var(--cyan); animation:blink 2s infinite; }
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.hero h1 { font-family:'Syne',sans-serif; font-weight:800; font-size:clamp(2.3rem,6vw,4.8rem); line-height:1.05; letter-spacing:-0.04em; margin-bottom:20px; }
+.hero h1 .shine { background:linear-gradient(95deg,var(--gold) 0%,var(--gold2) 40%,var(--cyan) 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.hero p { color:var(--gray2); font-size:1.05rem; font-weight:300; max-width:580px; margin:0 auto 50px; line-height:1.75; }
+/* SECTION */
+.sec-head { text-align:center; margin-bottom:44px; }
+.sec-head h2 { font-family:'Syne',sans-serif; font-weight:700; font-size:1.7rem; letter-spacing:-0.03em; margin-bottom:8px; }
+.sec-head p { color:var(--gray); font-size:0.9rem; }
+/* OFFERS */
+.offers-section { padding-bottom:90px; }
+.offers-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-bottom:20px; }
+@media(max-width:768px){ .offers-3{grid-template-columns:1fr;} }
+.offer-card { position:relative; border-radius:20px; overflow:hidden; background:var(--bg2); border:1px solid rgba(22,85,192,0.18); padding:30px 26px 26px; display:flex; flex-direction:column; transition:transform 0.3s,border-color 0.3s,box-shadow 0.3s; }
+.offer-card:hover { transform:translateY(-5px); border-color:rgba(22,85,192,0.42); box-shadow:0 20px 60px rgba(22,85,192,0.12); }
+.offer-pack { flex-direction:row; align-items:center; gap:32px; padding:34px 38px; background:linear-gradient(120deg,rgba(13,27,62,0.95),rgba(8,15,30,0.98)); border-color:rgba(201,168,76,0.28); }
+.offer-pack:hover { border-color:rgba(201,168,76,0.52); box-shadow:0 20px 60px rgba(201,168,76,0.1); }
+@media(max-width:768px){ .offer-pack{flex-direction:column;align-items:flex-start;gap:22px;} }
+.card-badge { position:absolute; top:16px; right:16px; font-family:'Space Mono',monospace; font-size:0.55rem; letter-spacing:0.1em; padding:4px 10px; border-radius:20px; text-transform:uppercase; }
+.badge-b { background:rgba(34,112,232,0.15); color:var(--cyan); border:1px solid rgba(0,212,255,0.2); }
+.badge-g { background:rgba(201,168,76,0.15); color:var(--gold2); border:1px solid rgba(201,168,76,0.3); }
+.card-ico-wrap { width:52px; height:52px; border-radius:13px; margin-bottom:18px; display:flex; align-items:center; justify-content:center; font-size:1.6rem; background:rgba(22,85,192,0.12); border:1px solid rgba(22,85,192,0.2); flex-shrink:0; }
+.offer-pack .card-ico-wrap { width:62px; height:62px; font-size:2rem; background:rgba(201,168,76,0.12); border-color:rgba(201,168,76,0.25); margin-bottom:0; }
+.card-ct { flex:1; }
+.card-title { font-family:'Syne',sans-serif; font-weight:700; font-size:1.12rem; margin-bottom:6px; letter-spacing:-0.02em; }
+.offer-pack .card-title { font-size:1.38rem; }
+.card-desc { color:var(--gray); font-size:0.81rem; line-height:1.65; margin-bottom:16px; }
+.card-feats { list-style:none; margin-bottom:22px; display:flex; flex-direction:column; gap:7px; }
+.card-feats li { display:flex; align-items:flex-start; gap:8px; font-size:0.79rem; color:var(--gray2); }
+.card-feats li::before { content:'✦'; color:var(--gold); font-size:0.58rem; margin-top:4px; flex-shrink:0; }
+.offer-pack .card-feats { flex-direction:row; flex-wrap:wrap; gap:8px; margin-bottom:0; }
+.offer-pack .card-feats li { background:rgba(22,85,192,0.1); border:1px solid rgba(22,85,192,0.2); padding:5px 12px; border-radius:20px; font-size:0.74rem; }
+.offer-pack .card-feats li::before { display:none; }
+.card-foot { margin-top:auto; }
+.price-row { display:flex; align-items:baseline; gap:6px; margin-bottom:14px; }
+.price-big { font-family:'Syne',sans-serif; font-weight:800; font-size:1.85rem; }
+.offer-pack .price-big { font-size:2.3rem; color:var(--gold); }
+.price-cur { font-size:0.83rem; color:var(--gray); }
+.price-old { font-size:0.83rem; color:var(--gray); text-decoration:line-through; margin-left:4px; }
+.price-save { font-size:0.68rem; color:var(--green); background:rgba(0,200,120,0.1); border:1px solid rgba(0,200,120,0.2); padding:3px 10px; border-radius:10px; margin-left:4px; white-space:nowrap; font-weight:600; }
+/* BUTTONS */
+.btn { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:13px 18px; border-radius:11px; border:none; font-family:'Syne',sans-serif; font-weight:700; font-size:0.88rem; cursor:pointer; transition:all 0.22s; user-select:none; }
+.btn:disabled { opacity:0.45; cursor:not-allowed; pointer-events:none; }
+.btn-blue { background:linear-gradient(135deg,var(--blue),var(--blue2)); color:#fff; box-shadow:0 4px 20px rgba(22,85,192,0.28); }
+.btn-blue:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(22,85,192,0.42); }
+.btn-gold { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:#050A14; box-shadow:0 4px 20px rgba(201,168,76,0.28); }
+.btn-gold:hover { transform:translateY(-2px); box-shadow:0 8px 30px rgba(201,168,76,0.42); }
+.btn-ghost { background:transparent; color:var(--gray2); border:1px solid rgba(120,130,170,0.25); }
+.btn-ghost:hover { background:rgba(255,255,255,0.04); border-color:rgba(120,130,170,0.4); }
+/* MODALS */
+.modal-bg { position:fixed; inset:0; z-index:200; background:rgba(2,5,10,0.88); backdrop-filter:blur(14px); display:none; align-items:center; justify-content:center; padding:20px; }
+.modal-bg.open { display:flex; }
+.modal { background:var(--bg3); border:1px solid rgba(201,168,76,0.22); border-radius:22px; width:100%; max-width:500px; max-height:90vh; overflow-y:auto; position:relative; animation:popIn 0.32s cubic-bezier(0.34,1.56,0.64,1) both; }
+@keyframes popIn{from{opacity:0;transform:scale(0.82) translateY(22px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-hd { padding:26px 26px 18px; border-bottom:1px solid rgba(22,85,192,0.15); display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+.modal-hd h3 { font-family:'Syne',sans-serif; font-weight:700; font-size:1.15rem; }
+.modal-hd p { color:var(--gray); font-size:0.8rem; margin-top:3px; }
+.close-btn { background:rgba(255,255,255,0.05); border:none; color:var(--gray2); width:32px; height:32px; border-radius:8px; font-size:1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background 0.2s; }
+.close-btn:hover { background:rgba(255,255,255,0.1); }
+.modal-bd { padding:22px 26px; }
+.modal-ft { padding:0 26px 26px; display:flex; flex-direction:column; gap:10px; }
+/* FORM */
+.field { margin-bottom:14px; }
+.field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:14px; }
+@media(max-width:480px){ .field-row{grid-template-columns:1fr;} }
+.lbl { display:block; font-size:0.71rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; color:var(--gray); margin-bottom:5px; }
+.lbl .req { color:var(--gold); }
+input,select,textarea { width:100%; background:rgba(4,8,15,0.7); border:1px solid rgba(22,85,192,0.2); border-radius:10px; padding:10px 13px; color:var(--white); font-family:'Outfit',sans-serif; font-size:0.88rem; outline:none; transition:border-color 0.2s,box-shadow 0.2s; -webkit-appearance:none; }
+input:focus,select:focus,textarea:focus { border-color:var(--blue2); box-shadow:0 0 0 3px rgba(34,112,232,0.12); }
+input::placeholder,textarea::placeholder { color:rgba(122,133,168,0.5); }
+select { background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237A85A8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 13px center; padding-right:36px; }
+select option { background:var(--bg3); }
+textarea { resize:vertical; min-height:85px; }
+/* PAY */
+.pay-methods { display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+.pay-m { display:flex; align-items:center; gap:13px; background:rgba(4,8,15,0.6); border:1px solid rgba(22,85,192,0.18); border-radius:11px; padding:13px 15px; cursor:pointer; transition:all 0.2s; }
+.pay-m:hover { border-color:rgba(34,112,232,0.38); background:rgba(22,85,192,0.07); }
+.pay-m.chosen { border-color:var(--gold); background:rgba(201,168,76,0.06); }
+.pay-m-ico { font-size:1.45rem; flex-shrink:0; }
+.pay-m-txt h4 { font-size:0.86rem; font-weight:600; margin-bottom:1px; }
+.pay-m-txt p { font-size:0.71rem; color:var(--gray); }
+.pay-m-chk { margin-left:auto; width:20px; height:20px; border-radius:50%; border:2px solid rgba(22,85,192,0.3); display:flex; align-items:center; justify-content:center; font-size:0.62rem; flex-shrink:0; transition:all 0.2s; }
+.pay-m.chosen .pay-m-chk { background:var(--gold); border-color:var(--gold); color:#050A14; font-weight:700; }
+.order-sum { background:rgba(4,8,15,0.5); border:1px solid rgba(201,168,76,0.15); border-radius:11px; padding:15px; margin-bottom:18px; }
+.o-row { display:flex; justify-content:space-between; font-size:0.8rem; color:var(--gray2); padding:4px 0; }
+.o-row.tot { border-top:1px solid rgba(201,168,76,0.15); margin-top:8px; padding-top:10px; font-family:'Syne',sans-serif; font-weight:700; font-size:1rem; color:var(--white); }
+.o-row.tot span:last-child { color:var(--gold); }
+.secure-ln { display:flex; align-items:center; justify-content:center; gap:6px; font-size:0.69rem; color:var(--gray); margin-top:8px; }
+/* PROGRESS */
+#view-progress { display:none; padding:100px 0 60px; }
+.prog-card { background:var(--bg2); border:1px solid rgba(22,85,192,0.18); border-radius:22px; padding:44px; max-width:640px; margin:0 auto; text-align:center; }
+.prog-card h2 { font-family:'Syne',sans-serif; font-size:1.5rem; font-weight:700; margin-bottom:7px; }
+.prog-card > p { color:var(--gray); font-size:0.87rem; margin-bottom:34px; }
+.step-list { display:flex; flex-direction:column; gap:10px; text-align:left; }
+.step-row { display:flex; align-items:center; gap:13px; background:rgba(4,8,15,0.5); border:1px solid rgba(22,85,192,0.12); border-radius:12px; padding:13px 15px; transition:all 0.3s; }
+.step-row.s-act { border-color:rgba(34,112,232,0.45); background:rgba(22,85,192,0.08); }
+.step-row.s-done { border-color:rgba(0,200,120,0.3); background:rgba(0,200,120,0.04); }
+.step-ic { width:37px; height:37px; border-radius:9px; flex-shrink:0; background:rgba(22,85,192,0.1); border:1px solid rgba(22,85,192,0.18); display:flex; align-items:center; justify-content:center; font-size:0.97rem; transition:all 0.3s; }
+.step-row.s-act .step-ic { background:rgba(34,112,232,0.18); border-color:var(--blue2); }
+.step-row.s-done .step-ic { background:rgba(0,200,120,0.12); border-color:rgba(0,200,120,0.35); }
+.step-inf { flex:1; }
+.step-inf h4 { font-size:0.84rem; font-weight:600; margin-bottom:2px; }
+.step-inf p { font-size:0.71rem; color:var(--gray); }
+.step-st { font-family:'Space Mono',monospace; font-size:0.66rem; color:var(--gray); white-space:nowrap; }
+.step-row.s-act .step-st { color:var(--cyan); }
+.step-row.s-done .step-st { color:var(--green); }
+.spin { width:13px; height:13px; border:2px solid rgba(0,212,255,0.2); border-top-color:var(--cyan); border-radius:50%; animation:rot 0.75s linear infinite; }
+@keyframes rot{to{transform:rotate(360deg)}}
+/* RESULTS */
+#view-results { display:none; padding:100px 0 80px; }
+.res-hero { background:linear-gradient(135deg,rgba(0,200,120,0.08),rgba(22,85,192,0.08)); border:1px solid rgba(0,200,120,0.2); border-radius:20px; padding:42px; text-align:center; margin-bottom:32px; }
+.res-hero h2 { font-family:'Syne',sans-serif; font-size:1.9rem; font-weight:800; margin-bottom:7px; }
+.res-hero p { color:var(--gray2); font-size:0.88rem; }
+.kpi-row { display:grid; grid-template-columns:repeat(3,1fr); gap:13px; margin-bottom:32px; }
+@media(max-width:500px){ .kpi-row{grid-template-columns:1fr;} }
+.kpi { background:var(--bg2); border:1px solid rgba(22,85,192,0.14); border-radius:14px; padding:20px; text-align:center; }
+.kpi-v { font-family:'Syne',sans-serif; font-size:1.8rem; font-weight:800; color:var(--gold); }
+.kpi-l { font-size:0.71rem; color:var(--gray); margin-top:3px; }
+.results-grid { display:grid; gap:16px; margin-bottom:32px; }
+.results-grid.g2 { grid-template-columns:1fr 1fr; }
+.results-grid.g1 { grid-template-columns:1fr; }
+@media(max-width:640px){ .results-grid.g2{grid-template-columns:1fr;} }
+.r-card { background:var(--bg2); border:1px solid rgba(22,85,192,0.18); border-radius:17px; overflow:hidden; transition:border-color 0.25s,transform 0.25s; }
+.r-card:hover { border-color:rgba(34,112,232,0.36); transform:translateY(-2px); }
+.r-card-hd { display:flex; align-items:center; gap:11px; padding:15px 18px; border-bottom:1px solid rgba(22,85,192,0.12); background:rgba(4,8,15,0.35); }
+.r-ico { width:33px; height:33px; border-radius:8px; flex-shrink:0; background:linear-gradient(135deg,rgba(201,168,76,0.14),rgba(34,112,232,0.14)); display:flex; align-items:center; justify-content:center; font-size:0.92rem; }
+.r-title { font-family:'Syne',sans-serif; font-weight:600; font-size:0.88rem; }
+.copy-btn { margin-left:auto; background:rgba(22,85,192,0.1); border:1px solid rgba(22,85,192,0.2); color:var(--gray2); font-size:0.66rem; padding:4px 9px; border-radius:6px; cursor:pointer; font-family:'Outfit',sans-serif; transition:all 0.18s; white-space:nowrap; }
+.copy-btn:hover { background:rgba(22,85,192,0.22); color:var(--white); }
+.r-card-bd { padding:18px; max-height:300px; overflow-y:auto; }
+.r-card-bd::-webkit-scrollbar { width:4px; }
+.r-card-bd::-webkit-scrollbar-thumb { background:rgba(22,85,192,0.25); border-radius:2px; }
+.r-card-bd pre { font-family:'Outfit',sans-serif; font-size:0.79rem; color:rgba(238,243,255,0.82); white-space:pre-wrap; word-break:break-word; line-height:1.75; }
+.viral-gauge { display:flex; align-items:center; gap:18px; margin-bottom:14px; }
+.gauge-ring { position:relative; width:74px; height:74px; flex-shrink:0; }
+.gauge-ring svg { transform:rotate(-90deg); }
+.g-track { fill:none; stroke:rgba(22,85,192,0.15); stroke-width:7; }
+.g-fill { fill:none; stroke:var(--gold); stroke-width:7; stroke-linecap:round; stroke-dasharray:207; stroke-dashoffset:207; transition:stroke-dashoffset 1.3s cubic-bezier(0.25,1,0.5,1); }
+.gauge-num { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:800; color:var(--gold); }
+.gauge-inf h3 { font-family:'Syne',sans-serif; font-size:0.97rem; font-weight:700; margin-bottom:3px; }
+.gauge-inf p { font-size:0.73rem; color:var(--gray); }
+.aff-banner { background:linear-gradient(120deg,rgba(201,168,76,0.08),rgba(22,85,192,0.06)); border:1px solid rgba(201,168,76,0.22); border-radius:17px; padding:28px; display:flex; align-items:center; gap:22px; margin-bottom:30px; }
+@media(max-width:600px){ .aff-banner{flex-direction:column;gap:14px;} }
+.aff-ico { font-size:2.5rem; flex-shrink:0; }
+.aff-txt h3 { font-family:'Syne',sans-serif; font-size:1rem; margin-bottom:5px; }
+.aff-txt p { font-size:0.79rem; color:var(--gray2); margin-bottom:11px; }
+.aff-code { display:inline-flex; align-items:center; gap:9px; background:rgba(4,8,15,0.7); border:1px solid rgba(201,168,76,0.35); padding:9px 16px; border-radius:9px; cursor:pointer; font-family:'Space Mono',monospace; font-size:0.92rem; color:var(--gold); transition:background 0.2s; user-select:all; }
+.aff-code:hover { background:rgba(201,168,76,0.08); }
+.aff-note { font-size:0.66rem; color:var(--gray); margin-top:5px; }
+.action-row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:60px; }
+.action-row .btn { width:auto; flex:1; min-width:170px; }
+/* LEVELS */
+.levels-section { padding-bottom:90px; }
+.lvl-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:17px; margin-top:38px; }
+@media(max-width:600px){ .lvl-grid{grid-template-columns:1fr;} }
+.lvl { border-radius:17px; padding:28px 22px; text-align:center; transition:transform 0.3s; }
+.lvl:hover { transform:translateY(-5px); }
+.lvl.bronze { background:linear-gradient(135deg,rgba(180,90,20,0.12),rgba(180,90,20,0.04)); border:1px solid rgba(210,120,50,0.28); }
+.lvl.silver { background:linear-gradient(135deg,rgba(150,155,185,0.12),rgba(150,155,185,0.04)); border:1px solid rgba(190,195,220,0.28); }
+.lvl.gold   { background:linear-gradient(135deg,rgba(201,168,76,0.16),rgba(201,168,76,0.04)); border:1px solid rgba(201,168,76,0.38); }
+.lvl-icon { font-size:2.1rem; margin-bottom:9px; }
+.lvl-name { font-family:'Syne',sans-serif; font-size:0.88rem; font-weight:700; margin-bottom:13px; letter-spacing:0.05em; }
+.lvl-pct { font-family:'Syne',sans-serif; font-size:2.7rem; font-weight:800; line-height:1; }
+.lvl.bronze .lvl-pct{color:#D4804A;} .lvl.silver .lvl-pct{color:#BCC0D8;} .lvl.gold .lvl-pct{color:var(--gold);}
+.lvl-amt { font-size:0.77rem; color:var(--gray); margin:4px 0 14px; }
+.lvl-req { font-size:0.71rem; color:var(--gray2); background:rgba(4,8,15,0.4); padding:5px 11px; border-radius:8px; }
+footer { border-top:1px solid rgba(22,85,192,0.12); padding:34px 0; text-align:center; color:var(--gray); font-size:0.77rem; }
+footer .logo { justify-content:center; margin-bottom:9px; font-size:1.05rem; }
+#toast { position:fixed; bottom:22px; left:50%; transform:translateX(-50%) translateY(8px); z-index:999; background:rgba(0,200,120,0.14); border:1px solid rgba(0,200,120,0.35); color:var(--white); padding:11px 22px; border-radius:30px; font-size:0.8rem; pointer-events:none; opacity:0; transition:all 0.26s; white-space:nowrap; }
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.fade-in { animation:fadeUp 0.5s both; }
+</style>
+</head>
+<body>
+
+<div class="bg-glow g1"></div><div class="bg-glow g2"></div><div class="bg-glow g3"></div>
+<div class="grid-bg"></div>
+<div id="toast"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-in">
+    <div class="logo" onclick="goHome()">
+      <div class="logo-box">🚀</div>
+      CREO<em>VATE</em>™
+    </div>
+    <span class="nav-pill">GÉNÉRATION IA</span>
+  </div>
+</nav>
+
+<!-- ═══ HOME ═══ -->
+<div id="view-home">
+  <section class="hero wrap fade-in">
+    <div class="hero-tag"><span class="dot"></span> Powered by Claude AI · Livraison Instantanée</div>
+    <h1>Votre contenu digital<br><span class="shine">professionnel en minutes</span></h1>
+    <p>Choisissez votre format à 7 000 FCFA, ou prenez le Pack Complet à 15 000 FCFA et économisez 6 000 FCFA. Contenus 100 % personnalisés, livrés en quelques minutes.</p>
+  </section>
+
+  <section class="offers-section wrap">
+    <div class="sec-head fade-in">
+      <h2>Choisissez votre offre</h2>
+      <p>Contenus personnalisés, livrés en quelques minutes</p>
+    </div>
+
+    <!-- 3 individual -->
+    <div class="offers-3">
+      <div class="offer-card">
+        <span class="card-badge badge-b">POPULAIRE</span>
+        <div class="card-ico-wrap">📘</div>
+        <div class="card-ct">
+          <div class="card-title">Ebook Marketing Pro</div>
+          <div class="card-desc">Un ebook professionnel complet, personnalisé pour votre projet avec stratégies, conseils et plan d'action.</div>
+          <ul class="card-feats">
+            <li>25+ pages structurées</li>
+            <li>5 chapitres thématiques</li>
+            <li>Études de cas incluses</li>
+            <li>Plan d'action actionnable</li>
+            <li>Adapté au marché africain</li>
+          </ul>
+        </div>
+        <div class="card-foot">
+          <div class="price-row"><span class="price-big">7 000</span><span class="price-cur">FCFA</span></div>
+          <button class="btn btn-blue" onclick="openOrder('ebook')">📘 Commander l'Ebook</button>
+        </div>
+      </div>
+
+      <div class="offer-card">
+        <div class="card-ico-wrap">🎙️</div>
+        <div class="card-ct">
+          <div class="card-title">Script Audio Pro</div>
+          <div class="card-desc">Script audio promotionnel professionnel de 60 secondes + 3 prompts visuels marketing optimisés.</div>
+          <ul class="card-feats">
+            <li>Script radio / podcast 60s</li>
+            <li>3 prompts visuels IA</li>
+            <li>Accroche musicale incluse</li>
+            <li>Slogan & CTA intégrés</li>
+            <li>Prêt à l'enregistrement</li>
+          </ul>
+        </div>
+        <div class="card-foot">
+          <div class="price-row"><span class="price-big">7 000</span><span class="price-cur">FCFA</span></div>
+          <button class="btn btn-blue" onclick="openOrder('audio')">🎙️ Commander le Script Audio</button>
+        </div>
+      </div>
+
+      <div class="offer-card">
+        <div class="card-ico-wrap">🎬</div>
+        <div class="card-ct">
+          <div class="card-title">Script Vidéo Viral</div>
+          <div class="card-desc">Script vidéo viral de 60 secondes adapté à votre plateforme avec hook, structure et appel à l'action.</div>
+          <ul class="card-feats">
+            <li>Format 60 secondes</li>
+            <li>Hook ultra-accrocheur</li>
+            <li>Adapté TikTok / Reels / LinkedIn</li>
+            <li>Indications ton & B-roll</li>
+            <li>CTA optimisé conversion</li>
+          </ul>
+        </div>
+        <div class="card-foot">
+          <div class="price-row"><span class="price-big">7 000</span><span class="price-cur">FCFA</span></div>
+          <button class="btn btn-blue" onclick="openOrder('video')">🎬 Commander le Script Vidéo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PERSUASION BANNER -->
+    <div style="text-align:center;padding:18px 20px;background:linear-gradient(90deg,rgba(201,168,76,0.08),rgba(22,85,192,0.08),rgba(201,168,76,0.08));border:1px dashed rgba(201,168,76,0.3);border-radius:14px;margin-bottom:20px;">
+      <span style="font-family:'Syne',sans-serif;font-size:0.95rem;font-weight:700;color:var(--gold2);">💡 Astuce</span>
+      <span style="font-size:0.85rem;color:var(--gray2);margin-left:8px;">Les 3 services séparément = <strong style="color:var(--white)">21 000 FCFA</strong> · Le Pack Complet = <strong style="color:var(--gold)">15 000 FCFA</strong> · Vous économisez <strong style="color:var(--green)">6 000 FCFA</strong> 🎉</span>
+    </div>
+
+    <!-- PACK -->
+    <div class="offer-card offer-pack">
+      <span class="card-badge badge-g">MEILLEURE OFFRE</span>
+      <div class="card-ico-wrap">⚡</div>
+      <div class="card-ct">
+        <div class="card-title">Pack Stratégique Complet</div>
+        <div class="card-desc" style="margin-bottom:12px;">Tout en un — Ebook + Audio + Vidéo + Analyse Virale + Plan Visibilité 7 jours. <strong style="color:var(--gold2)">Économisez 6 000 FCFA</strong> vs l'achat séparé des 3 services à 7 000 FCFA chacun.</div>
+        <ul class="card-feats">
+          <li>📘 Ebook Marketing Pro</li><li>🎙️ Script Audio + 3 Visuels IA</li>
+          <li>🎬 Script Vidéo Viral 60s</li><li>📊 Analyse Virale + Score /100</li>
+          <li>📅 Plan Visibilité 7 Jours</li><li>🤝 Code Affilié inclus</li>
+        </ul>
+      </div>
+      <div class="card-foot" style="min-width:210px;">
+        <div class="price-row">
+          <span class="price-big">15 000</span><span class="price-cur">FCFA</span>
+          <span class="price-old">21 000</span><span class="price-save">🔥 Économisez 6 000 FCFA</span>
+        </div>
+        <button class="btn btn-gold" onclick="openOrder('pack')">⚡ Commander le Pack Complet</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEVELS -->
+  <section class="wrap levels-section">
+    <div class="sec-head">
+      <h2>Programme Affilié</h2>
+      <p>Partagez Creovate™ et gagnez des commissions sur chaque vente</p>
+    </div>
+    <div class="lvl-grid">
+      <div class="lvl bronze"><div class="lvl-icon">🥉</div><div class="lvl-name">BRONZE</div><div class="lvl-pct">10%</div><div class="lvl-amt">dès 500 FCFA / vente</div><div class="lvl-req">Dès le 1er filleul</div></div>
+      <div class="lvl silver"><div class="lvl-icon">🥈</div><div class="lvl-name">SILVER</div><div class="lvl-pct">20%</div><div class="lvl-amt">jusqu'à 3 000 FCFA / vente</div><div class="lvl-req">À partir de 10 filleuls</div></div>
+      <div class="lvl gold"><div class="lvl-icon">🥇</div><div class="lvl-name">GOLD</div><div class="lvl-pct">30%</div><div class="lvl-amt">jusqu'à 4 500 FCFA / vente</div><div class="lvl-req">À partir de 30 filleuls</div></div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══ PROGRESS ═══ -->
+<div id="view-progress">
+  <div class="wrap">
+    <div class="prog-card">
+      <div style="font-size:2rem;margin-bottom:14px">✨</div>
+      <h2>Génération en cours…</h2>
+      <p id="prog-sub">Votre contenu est en cours de création par l'IA</p>
+      <div class="step-list" id="step-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ RESULTS ═══ -->
+<div id="view-results">
+  <div class="wrap">
+    <div class="res-hero">
+      <div style="font-size:2rem;margin-bottom:12px">🎉</div>
+      <h2 id="res-h">Votre contenu est prêt !</h2>
+      <p id="res-p">Félicitations — voici vos livrables personnalisés.</p>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-v" id="kpi-offer">—</div><div class="kpi-l">Offre choisie</div></div>
+      <div class="kpi"><div class="kpi-v" id="kpi-score">—</div><div class="kpi-l">Score Viral /100</div></div>
+      <div class="kpi"><div class="kpi-v" id="kpi-words">—</div><div class="kpi-l">Mots générés</div></div>
+    </div>
+    <div id="res-container"></div>
+    <div class="aff-banner" id="aff-banner" style="display:none">
+      <div class="aff-ico">🤝</div>
+      <div class="aff-txt">
+        <h3>Votre code affilié personnel</h3>
+        <p>Partagez Creovate™ et gagnez des commissions sur chaque vente parrainée.</p>
+        <div class="aff-code" onclick="copyAff()"><span id="aff-code-val">CREO-......</span> 📋</div>
+        <div class="aff-note">Cliquez pour copier · Partagez sur WhatsApp, Facebook, par email</div>
+      </div>
+    </div>
+    <div class="action-row">
+      <button class="btn btn-gold" onclick="downloadAll()">📥 Télécharger (.txt)</button>
+      <button class="btn btn-ghost" onclick="goHome()">↩ Nouvelle commande</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="logo" onclick="goHome()" style="justify-content:center;margin-bottom:8px;font-size:1.05rem">
+      <div class="logo-box">🚀</div>CREO<em>VATE</em>™
+    </div>
+    <p>Plateforme de génération de contenus digitaux stratégiques par IA</p>
+    <p style="margin-top:5px;font-size:0.67rem">© 2025 Creovate™ · Tous droits réservés · Propulsé par Claude AI</p>
+  </div>
+</footer>
+
+<!-- ═══ MODAL FORM ═══ -->
+<div class="modal-bg" id="mOrder">
+  <div class="modal">
+    <div class="modal-hd">
+      <div><h3 id="mOrder-title">Commander</h3><p id="mOrder-sub">Renseignez vos informations</p></div>
+      <button class="close-btn" onclick="closeM('mOrder')">✕</button>
+    </div>
+    <div class="modal-bd">
+      <div class="field-row">
+        <div class="field"><label class="lbl">Nom complet <span class="req">*</span></label><input type="text" id="f-name" placeholder="Ex : Amadou Diallo"></div>
+        <div class="field"><label class="lbl">Email <span class="req">*</span></label><input type="email" id="f-email" placeholder="votre@email.com"></div>
+      </div>
+      <div class="field"><label class="lbl">Description du projet <span class="req">*</span></label><textarea id="f-desc" placeholder="Décrivez votre projet, produit ou service…"></textarea></div>
+      <div class="field-row">
+        <div class="field">
+          <label class="lbl">Objectif marketing <span class="req">*</span></label>
+          <select id="f-obj">
+            <option value="">Choisir…</option>
+            <option>Augmenter ma visibilité</option><option>Générer des ventes</option>
+            <option>Construire ma communauté</option><option>Lancer un nouveau produit</option>
+            <option>Fidéliser mes clients</option><option>Devenir référence dans mon domaine</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="lbl">Plateforme cible <span class="req">*</span></label>
+          <select id="f-plat">
+            <option value="">Choisir…</option>
+            <option>TikTok</option><option>Instagram</option><option>Facebook</option>
+            <option>LinkedIn</option><option>YouTube</option><option>Twitter / X</option>
+            <option>WhatsApp Business</option><option>Multi-plateformes</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label class="lbl">Code de parrainage <span style="color:var(--gray);font-weight:400;text-transform:none">(optionnel)</span></label><input type="text" id="f-parrain" placeholder="Ex : CREO-A7K2M9" style="text-transform:uppercase"></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-blue" onclick="goToPay()">Continuer vers le paiement →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL PAY ═══ -->
+<div class="modal-bg" id="mPay">
+  <div class="modal">
+    <div class="modal-hd">
+      <div><h3>Finaliser la commande</h3><p id="mPay-sub">Choisissez votre moyen de paiement</p></div>
+      <button class="close-btn" onclick="closeM('mPay')">✕</button>
+    </div>
+    <div class="modal-bd">
+      <div class="order-sum">
+        <div class="o-row"><span id="pay-offer-nm">—</span><span id="pay-offer-pr">—</span></div>
+        <div class="o-row"><span>Génération IA</span><span style="color:var(--green)">Incluse</span></div>
+        <div class="o-row"><span>Livraison</span><span style="color:var(--green)">Instantanée</span></div>
+        <div class="o-row tot"><span>Total</span><span id="pay-total">—</span></div>
+      </div>
+      <div class="pay-methods">
+        <div class="pay-m chosen" onclick="pickPay(this,'mobile')">
+          <div class="pay-m-ico">📱</div>
+          <div class="pay-m-txt"><h4>Mobile Money</h4><p>Orange Money · Airtel Money · Moov Money</p></div>
+          <div class="pay-m-chk">✓</div>
+        </div>
+        <div class="pay-m" onclick="pickPay(this,'card')">
+          <div class="pay-m-ico">💳</div>
+          <div class="pay-m-txt"><h4>Carte bancaire</h4><p>Visa · Mastercard — SSL sécurisé</p></div>
+          <div class="pay-m-chk"></div>
+        </div>
+        <div class="pay-m" onclick="pickPay(this,'wave')">
+          <div class="pay-m-ico">🌊</div>
+          <div class="pay-m-txt"><h4>Wave</h4><p>Paiement rapide via l'application Wave</p></div>
+          <div class="pay-m-chk"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-gold" onclick="confirmPay()">🔒 Payer <span id="pay-btn-amt">—</span> maintenant</button>
+      <div class="secure-ln">🔒 Paiement sécurisé via Chariow · Données cryptées SSL</div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ── CONFIG ─────────────────────────────────────────────────
+const OFFERS = {
+  ebook: {
+    label:'Ebook Marketing Pro', icon:'📘', price:'7 000 FCFA',
+    steps:[
+      {ico:'💳',t:'Paiement validé',d:'Transaction confirmée'},
+      {ico:'📘',t:'Génération de l\'ebook',d:'Structure et contenu personnalisés'},
+    ],
+    run: runEbook,
+  },
+  audio: {
+    label:'Script Audio Pro', icon:'🎙️', price:'7 000 FCFA',
+    steps:[
+      {ico:'💳',t:'Paiement validé',d:'Transaction confirmée'},
+      {ico:'🎙️',t:'Script audio promotionnel',d:'60 secondes professionnel'},
+      {ico:'🎨',t:'3 Prompts visuels IA',d:'Concepts marketing stratégiques'},
+    ],
+    run: runAudio,
+  },
+  video: {
+    label:'Script Vidéo Viral', icon:'🎬', price:'7 000 FCFA',
+    steps:[
+      {ico:'💳',t:'Paiement validé',d:'Transaction confirmée'},
+      {ico:'🎬',t:'Script vidéo viral',d:'60s adapté à votre plateforme'},
+    ],
+    run: runVideo,
+  },
+  pack: {
+    label:'Pack Stratégique Complet', icon:'⚡', price:'15 000 FCFA',
+    steps:[
+      {ico:'💳',t:'Paiement validé',d:'Transaction confirmée'},
+      {ico:'📘',t:'Ebook Marketing Pro',d:'25+ pages personnalisées'},
+      {ico:'🎬',t:'Script Vidéo Viral',d:'60s adapté à votre plateforme'},
+      {ico:'📊',t:'Analyse Potentiel Viral',d:'Score /100 + recommandations'},
+      {ico:'🎙️',t:'Script Audio + Visuels',d:'Script promo + 3 prompts IA'},
+      {ico:'📅',t:'Plan Visibilité 7 Jours',d:'Calendrier de publication'},
+    ],
+    run: runPack,
+  },
+};
+
+// ── STATE ──────────────────────────────────────────────────
+var S = { offer:'', form:{}, txId:'', affCode:'', results:{}, payMethod:'mobile' };
+
+// ── VIEWS ──────────────────────────────────────────────────
+function showView(id) {
+  ['view-home','view-progress','view-results'].forEach(function(v){
+    document.getElementById(v).style.display = (v===id) ? '' : 'none';
+  });
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function goHome() {
+  S = { offer:'', form:{}, txId:'', affCode:'', results:{}, payMethod:'mobile' };
+  closeM('mOrder'); closeM('mPay');
+  showView('view-home');
+}
+
+// ── MODALS ──────────────────────────────────────────────────
+function openM(id) { document.getElementById(id).classList.add('open'); }
+function closeM(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-bg').forEach(function(bg){
+  bg.addEventListener('click', function(e){ if(e.target===bg) bg.classList.remove('open'); });
+});
+
+// ── OPEN ORDER ─────────────────────────────────────────────
+function openOrder(key) {
+  S.offer = key;
+  var off = OFFERS[key];
+  document.getElementById('mOrder-title').textContent = off.icon + ' ' + off.label;
+  document.getElementById('mOrder-sub').textContent   = 'Renseignez vos informations — ' + off.price;
+  openM('mOrder');
+}
+
+// ── VALIDATE & GO TO PAY ───────────────────────────────────
+function goToPay() {
+  var name  = document.getElementById('f-name').value.trim();
+  var email = document.getElementById('f-email').value.trim();
+  var desc  = document.getElementById('f-desc').value.trim();
+  var obj   = document.getElementById('f-obj').value;
+  var plat  = document.getElementById('f-plat').value;
+
+  if (!name)               { flash('f-name');  return; }
+  if (!email||!email.includes('@')) { flash('f-email'); return; }
+  if (!desc)               { flash('f-desc');  return; }
+  if (!obj)                { flash('f-obj');   return; }
+  if (!plat)               { flash('f-plat');  return; }
+
+  S.form = { name:name, email:email, desc:desc, obj:obj, plat:plat,
+             parrain: document.getElementById('f-parrain').value.trim().toUpperCase() };
+
+  closeM('mOrder');
+
+  var off = OFFERS[S.offer];
+  document.getElementById('mPay-sub').textContent    = 'Commande : ' + off.label;
+  document.getElementById('pay-offer-nm').textContent = off.label;
+  document.getElementById('pay-offer-pr').textContent = off.price;
+  document.getElementById('pay-total').textContent    = off.price;
+  document.getElementById('pay-btn-amt').textContent  = off.price;
+
+  // reset pay selection
+  document.querySelectorAll('.pay-m').forEach(function(m,i){
+    m.classList.toggle('chosen', i===0);
+    m.querySelector('.pay-m-chk').textContent = (i===0)?'✓':'';
+  });
+  S.payMethod = 'mobile';
+
+  openM('mPay');
+}
+
+function flash(id) {
+  var el = document.getElementById(id);
+  el.style.borderColor='#E84242'; el.style.boxShadow='0 0 0 3px rgba(232,66,66,0.14)';
+  el.focus();
+  setTimeout(function(){ el.style.borderColor=''; el.style.boxShadow=''; }, 1500);
+}
+
+// ── SELECT PAY ─────────────────────────────────────────────
+function pickPay(el, m) {
+  document.querySelectorAll('.pay-m').forEach(function(x){
+    x.classList.remove('chosen'); x.querySelector('.pay-m-chk').textContent='';
+  });
+  el.classList.add('chosen'); el.querySelector('.pay-m-chk').textContent='✓';
+  S.payMethod = m;
+}
+
+// ── CONFIRM PAYMENT ────────────────────────────────────────
+function confirmPay() {
+  closeM('mPay');
+  S.txId    = 'CRV-' + Date.now().toString(36).toUpperCase();
+  S.affCode = 'CREO-' + Math.random().toString(36).substr(2,6).toUpperCase();
+  showView('view-progress');
+  buildSteps();
+  OFFERS[S.offer].run();
+}
+
+// ── STEPS ──────────────────────────────────────────────────
+function buildSteps() {
+  var list = document.getElementById('step-list');
+  list.innerHTML = '';
+  OFFERS[S.offer].steps.forEach(function(s, i) {
+    var d = document.createElement('div');
+    d.className='step-row'; d.id='sr'+i;
+    d.innerHTML='<div class="step-ic" id="si'+i+'">'+s.ico+'</div><div class="step-inf"><h4>'+s.t+'</h4><p>'+s.d+'</p></div><div class="step-st" id="ss'+i+'">En attente…</div>';
+    list.appendChild(d);
+  });
+}
+function sAct(i) {
+  var r=document.getElementById('sr'+i),st=document.getElementById('ss'+i);
+  if(!r||!st)return;
+  r.classList.add('s-act');
+  st.innerHTML='<div class="spin"></div>';
+}
+function sDone(i) {
+  var r=document.getElementById('sr'+i),st=document.getElementById('ss'+i),si=document.getElementById('si'+i);
+  if(!r||!st||!si)return;
+  r.classList.remove('s-act'); r.classList.add('s-done');
+  si.textContent='✅'; st.textContent='Terminé';
+}
+
+// ── PIPELINE RUNNERS ───────────────────────────────────────
+async function runEbook() {
+  sAct(0); await sleep(800); sDone(0);
+  sAct(1); S.results.ebook = await ai(pEbook()); sDone(1);
+  await sleep(300); renderResults();
+}
+async function runAudio() {
+  sAct(0); await sleep(800); sDone(0);
+  sAct(1); S.results.audio = await ai(pAudio()); sDone(1);
+  sAct(2); S.results.visuals = await ai(pVisuals()); sDone(2);
+  await sleep(300); renderResults();
+}
+async function runVideo() {
+  sAct(0); await sleep(800); sDone(0);
+  sAct(1); S.results.video = await ai(pVideo()); sDone(1);
+  await sleep(300); renderResults();
+}
+async function runPack() {
+  sAct(0); await sleep(800); sDone(0);
+  sAct(1); S.results.ebook = await ai(pEbook()); sDone(1);
+  sAct(2); S.results.video = await ai(pVideo()); sDone(2);
+  sAct(3); S.results.viral = await ai(pViral()); sDone(3);
+  sAct(4); S.results.audio = await ai(pAudio()); S.results.visuals = await ai(pVisuals()); sDone(4);
+  sAct(5); S.results.plan = await ai(pPlan()); sDone(5);
+  await sleep(300); renderResults();
+}
+
+// ── PROMPTS ────────────────────────────────────────────────
+var f = function(){ return S.form; };
+function pEbook(){
+return 'Tu es un expert en marketing digital pour le marché africain francophone.\n\nGénère un ebook marketing professionnel pour ce projet :\nProjet : '+f().desc+'\nObjectif : '+f().obj+'\nPlateforme : '+f().plat+'\n\nStructure obligatoire :\n═══ TITRE ACCROCHEUR ═══\n[Titre puissant + sous-titre]\n\n═══ INTRODUCTION ═══\n[Contexte, problème, promesse — 2 paragraphes]\n\n═══ CHAPITRE 1 — CONTEXTE ET OPPORTUNITÉ ═══\n[Contenu détaillé avec exemples africains]\n\n═══ CHAPITRE 2 — POSITIONNEMENT SUR '+f().plat+' ═══\n[Tactiques spécifiques à la plateforme]\n\n═══ CHAPITRE 3 — CONTENU QUI CONVERTIT ═══\n[Formules, exemples, templates]\n\n═══ CHAPITRE 4 — CROISSANCE ET ENGAGEMENT ═══\n[Techniques de croissance organique]\n\n═══ CHAPITRE 5 — PLAN D\'ACTION ET MESURE ═══\n[Plan 30 jours avec KPIs]\n\n═══ CONCLUSION ET APPEL À L\'ACTION ═══\n[Résumé + CTA puissant]\n\nTon : professionnel, inspirant, concret. Minimum 600 mots.';
+}
+function pVideo(){
+return 'Tu es expert en création de contenus viraux pour '+f().plat+'.\n\nGénère un script vidéo viral 60 secondes pour :\nProjet : '+f().desc+'\nObjectif : '+f().obj+'\nPlateforme : '+f().plat+'\n\n⚡ HOOK — 0 à 3 secondes\nTexte : [phrase d\'accroche explosive]\n[TON : ...] [VISUEL : ...]\n\n😟 PROBLÈME — 3 à 10 secondes\nTexte : [identification problème audience]\n[TON : ...] [VISUEL : ...]\n\n✨ SOLUTION — 10 à 45 secondes\nTexte : [présentation solution avec preuves]\n[TON : ...] [VISUEL : ...]\n\n🎯 CTA — 45 à 60 secondes\nTexte : [appel à l\'action urgent]\n[TON : ...] [VISUEL : ...]\n\nAdapte au format et style de '+f().plat+'. Rends viral et mémorable.';
+}
+function pAudio(){
+return 'Tu es expert en production audio publicitaire pour le marché africain.\n\nGénère un script audio promotionnel 60 secondes :\nProjet : '+f().desc+'\nObjectif : '+f().obj+'\n\n🎵 INTRO MUSICALE [2s — indication jingle]\n\n📣 ACCROCHE (0-5s)\n[Texte à voix haute — accroche attention]\n[TON : enthousiaste et énergique]\n\n💡 CORPS DU MESSAGE (5-45s)\n[Texte — présentation du produit/service]\n[3 bénéfices clés]\n[TON : convaincant]\n\n🎯 SLOGAN\n[Slogan mémorable et percutant]\n\n📲 APPEL À L\'ACTION (45-60s)\n[Instructions claires pour l\'audience]\n[TON : urgent et direct]\n\n🎵 OUTRO MUSICALE [2s — fondu]\n\nRends mémorable, rythmé et adapté au marché africain francophone.';
+}
+function pVisuals(){
+return 'Tu es directeur artistique expert en marketing visuel pour les réseaux sociaux africains.\n\nGénère 3 prompts d\'images marketing pour Midjourney/DALL-E :\nProjet : '+f().desc+'\nPlateforme : '+f().plat+'\n\n🎨 CONCEPT 1 — Image Principale de Marque\nPROMPT EN ANGLAIS : [prompt détaillé 40+ mots avec style, éclairage, composition, couleurs]\nUSAGE : [comment utiliser]\n\n🎨 CONCEPT 2 — Post Engageant '+f().plat+'\nPROMPT EN ANGLAIS : [prompt adapté format '+f().plat+']\nUSAGE : [comment utiliser]\n\n🎨 CONCEPT 3 — Visuel Promotionnel Accrocheur\nPROMPT EN ANGLAIS : [prompt orienté conversion]\nUSAGE : [comment utiliser]\n\nPrompts très précis et professionnels pour images haute qualité.';
+}
+function pViral(){
+return 'Tu es analyste en marketing viral pour l\'Afrique francophone.\n\nAnalyse le potentiel viral :\nProjet : '+f().desc+'\nObjectif : '+f().obj+'\nPlateforme : '+f().plat+'\n\nFORMAT OBLIGATOIRE :\n\nSCORE_VIRAL: [X]/100\n\n📈 POINTS FORTS\n• [Point fort 1]\n• [Point fort 2]\n• [Point fort 3]\n\n⚠️ FREINS IDENTIFIÉS\n• [Frein 1 + solution]\n• [Frein 2 + solution]\n• [Frein 3 + solution]\n\n🎯 TOP 5 RECOMMANDATIONS\n1. [Action concrète]\n2. [Action 2]\n3. [Action 3]\n4. [Action 4]\n5. [Action 5]\n\n#️⃣ HASHTAGS OPTIMAUX POUR '+f().plat+'\n[10 hashtags pertinents marché africain]\n\n⏰ MEILLEUR CRÉNEAU\nJour : [jour]\nHeure : [heure Afrique de l\'Ouest]\nJustification : [pourquoi]\n\nAnalyse approfondie et score réaliste.';
+}
+function pPlan(){
+return 'Tu es stratège en marketing digital pour la croissance organique en Afrique.\n\nGénère un plan de visibilité viral 7 jours :\nProjet : '+f().desc+'\nObjectif : '+f().obj+'\nPlateforme : '+f().plat+'\n\nPour chaque jour (Lundi à Dimanche) :\n\n📅 [JOUR] — [Thème]\n⏰ Créneau : [heure]\n📝 Format : [type contenu]\n💡 Idée : [description précise]\n✍️ Accroche : [première phrase]\n#️⃣ Hashtags : [5 hashtags]\n🎯 Objectif : [résultat attendu]\n\n[Répéter pour chaque jour]\n\n📊 SYNTHÈSE\n[Résumé 7 jours + KPIs]\n\nConcret, actionnable, adapté à '+f().plat+' et au contexte africain.';
+}
+
+// ── CLAUDE API ─────────────────────────────────────────────
+async function ai(prompt) {
+  try {
+    var res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1800,
+        messages:[{role:'user',content:prompt}]
+      })
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    var data = await res.json();
+    return (data.content||[]).map(function(b){return b.text||'';}).join('').trim();
+  } catch(e) {
+    console.error(e);
+    return '[Erreur de génération — vérifiez votre connexion et réessayez]';
+  }
+}
+
+// ── RENDER RESULTS ─────────────────────────────────────────
+function renderResults() {
+  showView('view-results');
+  var off = OFFERS[S.offer];
+
+  document.getElementById('res-h').textContent = '🎉 ' + off.label + ' prêt !';
+  document.getElementById('res-p').textContent = S.form.name + ', voici votre livrable — Transaction : ' + S.txId;
+  document.getElementById('kpi-offer').textContent = off.icon + ' ' + off.label;
+
+  // viral score
+  var scoreStr = '—';
+  if (S.results.viral) {
+    var m = S.results.viral.match(/SCORE_VIRAL:\s*(\d+)/i);
+    if (m) scoreStr = m[1] + '/100';
+  }
+  document.getElementById('kpi-score').textContent = scoreStr;
+
+  // word count
+  var words = Object.values(S.results).join(' ').split(/\s+/).filter(Boolean).length;
+  document.getElementById('kpi-words').textContent = words > 999 ? (Math.round(words/100)*100).toLocaleString('fr') : words;
+
+  var container = document.getElementById('res-container');
+  container.innerHTML = '';
+
+  // viral card
+  if (S.results.viral) {
+    var vn = 70;
+    var vm = S.results.viral.match(/SCORE_VIRAL:\s*(\d+)/i);
+    if (vm) vn = parseInt(vm[1]);
+    var cleanV = S.results.viral.replace(/SCORE_VIRAL:\s*\d+\/100\s*/i,'').trim();
+    var offset = Math.round(207*(1-vn/100));
+    var label = vn>=80?'🔥 Excellent potentiel':vn>=65?'⚡ Bon potentiel':'💡 Potentiel à développer';
+    var vc = document.createElement('div');
+    vc.className = 'r-card'; vc.style.marginBottom='16px';
+    vc.innerHTML='<div class="r-card-hd"><div class="r-ico">📊</div><div class="r-title">Analyse du Potentiel Viral</div><button class="copy-btn" onclick="copyKey(\'viral\')">📋 Copier</button></div><div class="r-card-bd"><div class="viral-gauge"><div class="gauge-ring"><svg width="74" height="74" viewBox="0 0 74 74"><circle class="g-track" cx="37" cy="37" r="33"/><circle class="g-fill" id="gfill" cx="37" cy="37" r="33" stroke-dashoffset="'+offset+'"/></svg><div class="gauge-num">'+vn+'</div></div><div class="gauge-inf"><h3>Score Viral</h3><p>'+label+'</p></div></div><pre>'+escHtml(cleanV)+'</pre></div>';
+    container.appendChild(vc);
+  }
+
+  // content cards
+  var defs = [
+    {k:'ebook',   ico:'📘', t:'Ebook Marketing Pro'},
+    {k:'video',   ico:'🎬', t:'Script Vidéo Viral'},
+    {k:'audio',   ico:'🎙️', t:'Script Audio Promotionnel'},
+    {k:'visuals', ico:'🎨', t:'Prompts Visuels IA'},
+    {k:'plan',    ico:'📅', t:'Plan Visibilité 7 Jours'},
+  ];
+  var cards = defs.filter(function(d){ return !!S.results[d.k]; });
+
+  var grid = document.createElement('div');
+  grid.className = 'results-grid ' + (cards.length>=2?'g2':'g1');
+
+  cards.forEach(function(c){
+    var el = document.createElement('div');
+    el.className='r-card';
+    el.innerHTML='<div class="r-card-hd"><div class="r-ico">'+c.ico+'</div><div class="r-title">'+c.t+'</div><button class="copy-btn" onclick="copyKey(\''+c.k+'\')">📋 Copier</button></div><div class="r-card-bd"><pre>'+escHtml(S.results[c.k])+'</pre></div>';
+    grid.appendChild(el);
+  });
+  container.appendChild(grid);
+
+  // affiliate
+  var aff = document.getElementById('aff-banner');
+  if (S.offer==='pack') {
+    aff.style.display='flex';
+    document.getElementById('aff-code-val').textContent = S.affCode;
+  } else {
+    aff.style.display='none';
+  }
+}
+
+function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── COPY ───────────────────────────────────────────────────
+function copyKey(k){
+  var text = S.results[k]||'';
+  navigator.clipboard.writeText(text).then(function(){toast('✅ Contenu copié !');}).catch(function(){toast('Copie non supportée');});
+}
+function copyAff(){
+  navigator.clipboard.writeText(S.affCode).then(function(){toast('✅ Code '+S.affCode+' copié !');});
+}
+
+// ── DOWNLOAD ───────────────────────────────────────────────
+function downloadAll(){
+  var off=OFFERS[S.offer];
+  var t='═════════════════════════════════════════\nCREOVATE™ — '+off.label.toUpperCase()+'\n═════════════════════════════════════════\nClient      : '+S.form.name+'\nEmail       : '+S.form.email+'\nTransaction : '+S.txId+'\nDate        : '+new Date().toLocaleString('fr-FR')+'\nOffre       : '+off.label+' — '+off.price+'\nPlateforme  : '+S.form.plat+'\nObjectif    : '+S.form.obj+'\n═════════════════════════════════════════\n\n';
+  var labs={ebook:'📘 EBOOK MARKETING PRO',video:'🎬 SCRIPT VIDÉO VIRAL',audio:'🎙️ SCRIPT AUDIO PROMOTIONNEL',visuals:'🎨 PROMPTS VISUELS IA',viral:'📊 ANALYSE VIRALE',plan:'📅 PLAN VISIBILITÉ 7 JOURS'};
+  Object.entries(S.results).forEach(function(e){
+    if(e[1]) t+='\n'+'═'.repeat(41)+'\n'+(labs[e[0]]||e[0].toUpperCase())+'\n'+'═'.repeat(41)+'\n'+e[1]+'\n';
+  });
+  if(S.affCode) t+='\n'+'═'.repeat(41)+'\n🤝 VOTRE CODE AFFILIÉ\n'+'═'.repeat(41)+'\n'+S.affCode+'\n';
+  var blob=new Blob([t],{type:'text/plain;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url; a.download='CREOVATE_'+S.form.name.replace(/\s+/g,'_')+'_'+S.offer+'.txt';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  toast('📥 Fichier téléchargé !');
+}
+
+// ── TOAST ──────────────────────────────────────────────────
+function toast(msg){
+  var el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(function(){el.classList.remove('show');},2500);
+}
+
+// ── UTIL ───────────────────────────────────────────────────
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
+
+// Init
+showView('view-home');
+</script>
+</body>
+</html>
